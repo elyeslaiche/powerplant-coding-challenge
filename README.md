@@ -43,6 +43,7 @@ dotnet run
 API will be available at:
 http://localhost:8888
 
+---
 
 ## API Endpoints
 ### Health check
