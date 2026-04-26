@@ -1,0 +1,6 @@
+@loadCalculator_HostAddress = http://localhost:5159
+
+GET {{loadCalculator_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
