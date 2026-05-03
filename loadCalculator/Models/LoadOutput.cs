@@ -1,5 +1,9 @@
 public class LoadOutput
 {
-    public string name {get;set;}
-    public double p {get;set;}
+    public List<LoadCalculated> LoadList {get; set;}
+
+    public LoadOutput()
+    {
+        LoadList = new List<LoadCalculated>();
+    }
 }

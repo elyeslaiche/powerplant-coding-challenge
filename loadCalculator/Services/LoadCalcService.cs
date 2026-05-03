@@ -1,64 +1,83 @@
-using System.Numerics;
+
+
+using Microsoft.VisualBasic;
 
 public class LoadCalcService : ILoadCalcService
 {
-    public List<LoadOutput> CalculateLoad(LoadInput input)
+    private Dictionary<FuelType, string> _fuelTypeParsingDictionary = new Dictionary<FuelType, string>
     {
-        var fuelList = input.fuels;
-        var pwrPlantList = input.powerplants;
-        var loadToProduce = input.load;
-        List<LoadOutput> outputList = new List<LoadOutput>();
+        {FuelType.gasfired , "gas(euro/MWh)" },
+        {FuelType.turbojet , "kerosine(euro/MWh)" },
+        {FuelType.windturbine , "wind(%)" },
+    };
+
+    public LoadOutput CalculateLoad(LoadInput input)
+    {
+        var fuelList = input.Fuels;
+        var pwrPlantList = input.Powerplants;
+        var loadToProduce = input.Load;
+
+        LoadOutput output = new LoadOutput();
+
+        if (fuelList == null)
+            throw new Exception("Could not parse Fuel prices");
+
+        if (pwrPlantList == null)
+            throw new Exception("Could not parse Powerplants");
+
+        if (double.IsNaN(loadToProduce))
+            throw new Exception("Load cannot be null");
 
         foreach (var plant in pwrPlantList)
         {
-            plant.fuel = GetCostOfProd(plant, fuelList);
-            if (plant.type == "windturbine")
+            GetCostOfProd(plant, fuelList);
+        }
+
+        foreach (var plant in pwrPlantList.OrderBy(p => p.ProductionCost))
+        {
+            (var calulatedLoad, loadToProduce) = CalculateLoadPerPlant(plant, loadToProduce);
+            output.LoadList.Add(calulatedLoad);
+        }
+
+        return output;
+    }
+
+    private (LoadCalculated, double) CalculateLoadPerPlant(Plant plant, double load)
+    {
+        if (load > plant.Pmax)
+        {
+            return (new LoadCalculated
             {
-                plant.pmax *= fuelList["wind(%)"] / 100;
+                Name = plant.Name,
+                P = Math.Round(plant.Pmax, 1)
+            }, load - Math.Round(plant.Pmax, 1));
+        }
+
+        return (new LoadCalculated
+        {
+            Name = plant.Name,
+            P = Math.Round(load, 1)
+        }, 0);
+    }
+    private void GetCostOfProd(Plant plant, Dictionary<string, double> fuelList)
+    {
+        FuelType plantType;
+        if (Enum.TryParse<FuelType>(plant.Type, out plantType))
+        {
+            var fuelTypeInInput = _fuelTypeParsingDictionary[plantType];
+
+            if (plantType == FuelType.windturbine)
+                plant.Pmax *= fuelList[fuelTypeInInput] / 100;
+            else
+            {
+                plant.ProductionCost = fuelList[fuelTypeInInput] / plant.Efficiency;
+                
+                if (plantType == FuelType.gasfired)
+                    plant.ProductionCost += 0.3 * fuelList["co2(euro/ton)"]; //Adding 0.3 Ton of CO2 per Mwh to the cost of prod
+
             }
-            plant.TotalProductionCost = plant.fuel.Cost / plant.efficiency;
+
         }
 
-        foreach (var plant in pwrPlantList.OrderBy(p => p.TotalProductionCost))
-        {
-            var output = CalculateLoadPerPlant(plant, loadToProduce);
-            loadToProduce -= output.p;
-            outputList.Add(output);
-        }
-
-        return outputList;
-
-    }
-
-    private LoadOutput CalculateLoadPerPlant(Plant plant, double load)
-    {
-        if (load > plant.pmax)
-        {
-            return new LoadOutput
-            {
-                name = plant.name,
-                p = Math.Round(plant.pmax, 1)
-            };
-        }
-        else
-        {
-            return new LoadOutput
-            {
-                name = plant.name,
-                p = Math.Round(load, 1)
-            };
-        }
-    }
-    private Fuel GetCostOfProd(Plant plant, Dictionary<string, double> fuelList)
-    {
-        switch (plant.type)
-        {
-            case "gasfired":
-                return new Fuel("gas(euro/MWh)", fuelList["gas(euro/MWh)"]);
-            case "turbojet":
-                return new Fuel("kerosine(euro/MWh)", fuelList["kerosine(euro/MWh)"]);
-            default:
-                return new Fuel("N/A", 0);
-        }
     }
 }

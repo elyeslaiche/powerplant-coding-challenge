@@ -10,7 +10,9 @@ builder.Services.AddScoped<ILoadCalcService, LoadCalcService>();
 var app = builder.Build();
 
 app.MapOpenApi();
-app.MapGet("/ping", () => "pong");
+
+app.MapGet("/ping", () => "pong"); //To test the connexion to the API.
+
 app.MapControllers();
 
 app.Run();
