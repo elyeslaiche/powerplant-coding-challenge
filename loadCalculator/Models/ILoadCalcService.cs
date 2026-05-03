@@ -1,4 +1,4 @@
 public interface ILoadCalcService
 {
-     List<LoadOutput> CalculateLoad(LoadInput input);
+     LoadOutput CalculateLoad(LoadInput input);
 }

@@ -1,15 +1,13 @@
 public class Plant
 {
-    public string name { get; set; }
-    public string type { get; set; }
+    public string Name { get; set; } = String.Empty;
+    public string Type { get; set; } = String.Empty;
 
-    public double efficiency { get; set; }
+    public double Efficiency { get; set; }
 
-    public double pmin { get; set; }
-    public double pmax { get; set; }
+    public double Pmin { get; set; }
+    public double Pmax { get; set; }
 
-    public double TotalProductionCost { get; set; }
-    public Fuel? fuel { get; set; }
-
+    public double ProductionCost { get; set; } = 0;
 
 }

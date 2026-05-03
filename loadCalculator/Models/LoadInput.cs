@@ -1,6 +1,6 @@
 public class LoadInput
 {
-    public double load { get; set; }
-    public Dictionary<string,double> fuels { get; set; }
-    public List<Plant> powerplants { get; set; }
+    public double Load { get; set; }
+    public Dictionary<string,double> Fuels { get; set; } = new Dictionary<string, double>();
+    public List<Plant> Powerplants { get; set; } = new List<Plant>();
 }
