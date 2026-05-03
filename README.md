@@ -159,15 +159,6 @@ appsettings.json
 
 ---
 
-## Possible Improvements
-
-* Introduce unit commitment constraints (startup costs, ramping)
-* Replace greedy approach with linear programming
-* Add validation and error handling for edge cases
-* Extend CO₂ modeling with emission caps
-
----
-
 ## Author
 
 Elyes Laiche
