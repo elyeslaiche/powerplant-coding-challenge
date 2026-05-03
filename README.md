@@ -59,6 +59,7 @@ Wind turbines:
 
 * No fuel cost
 * No CO₂ emissions
+* Only based on wind % => Pmax = Pmax * wind(%)
 
 This introduces a **carbon pricing mechanism**, where higher emissions lead to higher production costs.
 
